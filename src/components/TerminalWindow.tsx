@@ -1,5 +1,5 @@
-
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent,} from 'react'
+import { completeInput } from '../terminal/completion'
 import { LOGOS, isLogoName, type LogoName } from '../data/logos'
 import { Neofetch } from './Neofetch'
 import './TerminalWindow.css'
@@ -31,6 +31,9 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
   const [input, setInput] = useState('')
   const [entries, setEntries] = useState<OutputEntry[]>([])
   const [logo, setLogo] = useState<LogoName>('apathbyte')
+  const [commandHistory, setCommandHistory] = useState<string[]>([])
+  const [historyIndex, setHistoryIndex] = useState<number | null>(null)
+  const savedDraft = useRef('')
 
   const sessionRef = useRef<HTMLElement>(null)
 
@@ -42,15 +45,56 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
     }
   }, [entries])
 
+  function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Tab') {
+      event.preventDefault()
+      setInput(current => completeInput(current))
+      return
+    }
+
+    if (event.key === 'ArrowUp') {
+      if (commandHistory.length === 0) return
+
+      event.preventDefault()
+
+      const nextIndex =
+        historyIndex === null
+          ? commandHistory.length - 1
+          : Math.max(0, historyIndex - 1)
+
+      if (historyIndex === null) {
+        savedDraft.current = input
+      }
+
+      setHistoryIndex(nextIndex)
+      setInput(commandHistory[nextIndex])
+      return
+    }
+
+    if (event.key === 'ArrowDown' && historyIndex !== null) {
+      event.preventDefault()
+
+      const nextIndex = historyIndex + 1
+
+      if (nextIndex >= commandHistory.length) {
+        setHistoryIndex(null)
+        setInput(savedDraft.current)
+      } else {
+        setHistoryIndex(nextIndex)
+        setInput(commandHistory[nextIndex])
+      }
+    }
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-
     const command = input.trim()
-
     if (!command) return
 
+    setCommandHistory(previous => [...previous, command])
+    setHistoryIndex(null)
+    savedDraft.current = ''
     setInput('')
-
     const args = command.toLowerCase().split(/\s+/)
     const name = args[0]
 
@@ -213,6 +257,7 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
               spellCheck={false}
               autoFocus
               aria-label="Terminal command"
+              onKeyDown={handleInputKeyDown}
             />
           </div>
         </form>
