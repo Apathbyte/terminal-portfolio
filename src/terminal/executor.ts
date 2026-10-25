@@ -3,10 +3,17 @@ import { executePortfolioCommand } from './portfolioCommands'
 import { LOGOS, isLogoName, type LogoName } from '../data/logos'
 import { COMMANDS, findCommand } from './commands'
 import type { ParsedCommand } from './parser'
+import {
+  getVirtualNode,
+  listVirtualDirectory,
+  renderVirtualTree,
+  resolveVirtualPath,
+} from './filesystem'
 
 export type CommandContext = {
   logo: LogoName
   history: readonly string[]
+  cwd: string
 }
 
 export type CommandResult =
@@ -14,11 +21,18 @@ export type CommandResult =
   | { type: 'clear' }
   | { type: 'set-logo'; logo: LogoName; text: string }
   | { type: 'navigate'; destination: 'gui' | 'boot' }
+  | { type: 'change-directory'; path: string }
 
 export function executeCommand(
   parsed: ParsedCommand,
   context: CommandContext
 ): CommandResult {
+    if (parsed.error) {
+  return {
+    type: 'message',
+    text: parsed.error,
+  }
+}
   const command = findCommand(parsed.name)
 
   if (!command) {
@@ -123,20 +137,173 @@ export function executeCommand(
       }
     }
 
-    default: {
-        const result = executePortfolioCommand(command.name)
+    // default: {
+    //     const result = executePortfolioCommand(command.name)
 
-        if (result){
-            return {
-                type: 'message',
-                text: result.text,
-                links: result.links,
-            }
+    //     if (result){
+    //         return {
+    //             type: 'message',
+    //             text: result.text,
+    //             links: result.links,
+    //         }
+    //     }
+    // }
+    //   return {
+    //     type: 'message',
+    //     text: `Command not implemented: ${command.name}`,
+    //     }
+
+    case 'pwd':
+      return {
+        type: 'message',
+        text: context.cwd,
+      }
+
+    case 'ls': {
+      if (args.length > 1) {
+        return {
+          type: 'message',
+          text: 'Usage: ls [path]',
         }
+      }
+
+      const target = args[0] ?? '.'
+      const path = resolveVirtualPath(context.cwd, target)
+      const node = getVirtualNode(path)
+
+      if (!node) {
+        return {
+          type: 'message',
+          text: `ls: cannot access '${target}': No such file or directory`,
+        }
+      }
+
+      return {
+        type: 'message',
+        text: node.type === 'file'
+          ? path.split('/').pop() ?? ''
+          : listVirtualDirectory(node),
+      }
     }
+
+    case 'cd': {
+      if (args.length > 1) {
+        return {
+          type: 'message',
+          text: 'Usage: cd [path]',
+        }
+      }
+
+      const target = args[0] ?? '~'
+      const path = resolveVirtualPath(context.cwd, target)
+      const node = getVirtualNode(path)
+
+      if (!node) {
+        return {
+          type: 'message',
+          text: `cd: ${target}: No such file or directory`,
+        }
+      }
+
+      if (node.type !== 'directory') {
+        return {
+          type: 'message',
+          text: `cd: ${target}: Not a directory`,
+        }
+      }
+
+      return {
+        type: 'change-directory',
+        path,
+      }
+    }
+
+    case 'cat': {
+      if (args.length === 0) {
+        return {
+          type: 'message',
+          text: 'Usage: cat FILE',
+        }
+      }
+
+      const output = args.map(target => {
+        const path = resolveVirtualPath(context.cwd, target)
+        const node = getVirtualNode(path)
+
+        if (!node) {
+          return `cat: ${target}: No such file or directory`
+        }
+
+        if (node.type !== 'file') {
+          return `cat: ${target}: Is a directory`
+        }
+
+        return node.content
+      })
+
+      return {
+        type: 'message',
+        text: output.join('\n\n'),
+      }
+    }
+
+    case 'tree': {
+      if (args.length > 1) {
+        return {
+          type: 'message',
+          text: 'Usage: tree [path]',
+        }
+      }
+
+      const target = args[0] ?? '.'
+      const path = resolveVirtualPath(context.cwd, target)
+      const node = getVirtualNode(path)
+
+      if (!node) {
+        return {
+          type: 'message',
+          text: `tree: ${target}: No such file or directory`,
+        }
+      }
+
+      if (node.type !== 'directory') {
+        return {
+          type: 'message',
+          text: `tree: ${target}: Not a directory`,
+        }
+      }
+
+      const label = path === '/'
+        ? '/'
+        : `${path.split('/').pop()}/`
+
+      return {
+        type: 'message',
+        text: renderVirtualTree(node, label),
+      }
+    }
+
+    case 'echo':
+      return {
+        type: 'message',
+        text: args.join(' '),
+      }
+
+    default: {
+      const result = executePortfolioCommand(command.name)
+
+      if (result) {
+        return {
+          type: 'message',
+          text: result.text,
+          links: result.links,
+        }
+      }
+
       return {
         type: 'message',
         text: `Command not implemented: ${command.name}`,
-        }
+      }
+    }
   }
 }

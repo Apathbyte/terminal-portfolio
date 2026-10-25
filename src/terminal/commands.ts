@@ -98,7 +98,42 @@ export const COMMANDS: readonly CommandDefinition[] = [
     usage: 'resume',
     aliases: ['cv'],
   },
-
+  {
+    name: 'pwd',
+    description: 'Print the current working directory',
+    usage: 'pwd',
+    aliases: [],
+  },
+  {
+    name: 'ls',
+    description: 'List files and directories',
+    usage: 'ls [path]',
+    aliases: [],
+  },
+  {
+    name: 'cd',
+    description: 'Change the working directory',
+    usage: 'cd [path]',
+    aliases: [],
+  },
+  {
+    name: 'cat',
+    description: 'Display file contents',
+    usage: 'cat FILE',
+    aliases: [],
+  },
+  {
+    name: 'tree',
+    description: 'Display the directory tree',
+    usage: 'tree [path]',
+    aliases: [],
+  },
+  {
+    name: 'echo',
+    description: 'Print text to the terminal',
+    usage: 'echo [text]',
+    aliases: [],
+  },
 ]
 
 export function findCommand(name: string) {

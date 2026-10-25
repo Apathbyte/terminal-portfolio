@@ -5,7 +5,7 @@ import {
   type FormEvent,
   type KeyboardEvent,
 } from 'react'
-
+import { HOME, promptPath} from '../terminal/filesystem'
 import type { PortfolioLink } from '../data/portfolio'
 import { type LogoName } from '../data/logos'
 import { completeInput } from '../terminal/completion'
@@ -20,13 +20,14 @@ type TerminalProps = {
 }
 
 type OutputEntry =
-  | { kind: 'command'; text: string }
+  | { kind: 'command'; text: string; cwd: string}
   | { kind: 'message'; text: string; links?: readonly PortfolioLink[] }
 
 export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
   const [input, setInput] = useState('')
   const [entries, setEntries] = useState<OutputEntry[]>([])
   const [logo, setLogo] = useState<LogoName>('apathbyte')
+  const [cwd, setCwd] = useState(HOME)
 
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState<number | null>(null)
@@ -102,6 +103,7 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
     const result = executeCommand(parsed, {
       logo,
       history: updatedHistory,
+      cwd,
     })
 
     if (result.type === 'navigate') {
@@ -119,13 +121,27 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
       return
     }
 
+    if (result.type === 'change-directory') {
+      setEntries(previous => [
+        ...previous,
+        {
+          kind: 'command',
+          text: parsed.raw,
+          cwd,
+        },
+      ])
+
+      setCwd(result.path)
+      return
+    }
+
     if (result.type === 'set-logo') {
       setLogo(result.logo)
     }
 
     setEntries(previous => [
       ...previous,
-      { kind: 'command', text: parsed.raw },
+      { kind: 'command', text: parsed.raw, cwd, },
       { kind: 'message', 
         text: result.text, 
         links: result.type == 'message' ? result.links: undefined,
@@ -159,7 +175,7 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
                       visitor@apathbyte
                     </span>
                     <span className="shell-green">
-                      :~]─[portfolio]
+                      :{promptPath(entry.cwd)}]─[portfolio]
                     </span>
                   </div>
 
@@ -213,7 +229,7 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
               visitor@apathbyte
             </span>
             <span className="shell-green">
-              :~]─[portfolio]
+              :{promptPath(cwd)}]─[portfolio]
             </span>
           </div>
 
