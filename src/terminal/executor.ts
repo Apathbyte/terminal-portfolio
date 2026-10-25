@@ -1,4 +1,5 @@
-
+import type { PortfolioLink } from '../data/portfolio'
+import { executePortfolioCommand } from './portfolioCommands'
 import { LOGOS, isLogoName, type LogoName } from '../data/logos'
 import { COMMANDS, findCommand } from './commands'
 import type { ParsedCommand } from './parser'
@@ -9,7 +10,7 @@ export type CommandContext = {
 }
 
 export type CommandResult =
-  | { type: 'message'; text: string }
+  | { type: 'message'; text: string; links?: readonly PortfolioLink[]}
   | { type: 'clear' }
   | { type: 'set-logo'; logo: LogoName; text: string }
   | { type: 'navigate'; destination: 'gui' | 'boot' }
@@ -122,10 +123,20 @@ export function executeCommand(
       }
     }
 
-    default:
+    default: {
+        const result = executePortfolioCommand(command.name)
+
+        if (result){
+            return {
+                type: 'message',
+                text: result.text,
+                links: result.links,
+            }
+        }
+    }
       return {
         type: 'message',
         text: `Command not implemented: ${command.name}`,
-      }
+        }
   }
 }

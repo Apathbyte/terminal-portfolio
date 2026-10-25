@@ -6,6 +6,7 @@ import {
   type KeyboardEvent,
 } from 'react'
 
+import type { PortfolioLink } from '../data/portfolio'
 import { type LogoName } from '../data/logos'
 import { completeInput } from '../terminal/completion'
 import { executeCommand } from '../terminal/executor'
@@ -20,7 +21,7 @@ type TerminalProps = {
 
 type OutputEntry =
   | { kind: 'command'; text: string }
-  | { kind: 'message'; text: string }
+  | { kind: 'message'; text: string; links?: readonly PortfolioLink[] }
 
 export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
   const [input, setInput] = useState('')
@@ -125,7 +126,10 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
     setEntries(previous => [
       ...previous,
       { kind: 'command', text: parsed.raw },
-      { kind: 'message', text: result.text },
+      { kind: 'message', 
+        text: result.text, 
+        links: result.type == 'message' ? result.links: undefined,
+      },
     ])
   }
 
@@ -167,10 +171,34 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
               )
             }
 
+            // return (
+            //   <pre className="terminal-output" key={index}>
+            //     {entry.text}
+            //   </pre>
+            // )
+
             return (
-              <pre className="terminal-output" key={index}>
-                {entry.text}
-              </pre>
+              <div className="terminal-response" key={index}>
+                <pre className="terminal-output">
+                  {entry.text}
+                </pre>
+
+                {entry.links && entry.links.length > 0 && (
+                  <div className="terminal-output-links">
+                    {entry.links.map(link => (
+                      <a
+                        key={`${link.label}-${link.url}`}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="terminal-output-link"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
             )
           })}
         </div>

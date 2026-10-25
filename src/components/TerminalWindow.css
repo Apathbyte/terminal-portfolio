@@ -239,3 +239,31 @@
     flex-wrap: wrap;
   }
 }
+.terminal-response {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.terminal-output-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.terminal-output-link {
+  color: #39baf0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+.terminal-output-link:hover {
+  color: #8bdcff;
+}
+
+.terminal-output-link:focus-visible {
+  outline: 1px solid #39baf0;
+  outline-offset: 3px;
+}
