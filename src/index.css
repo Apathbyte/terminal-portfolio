@@ -1,5 +1,5 @@
 :root {
-  font-famaily: "DejaVu Sans Mono", monospace;
+  font-family: "DejaVu Sans Mono", monospace;
   color-scheme: dark;
 
   --bg: #050505;
@@ -18,5 +18,5 @@ body{
   margin: 0;
   min-width:320px;
   background: var(--bg);
-  color: var (--text);
+  color: var(--text);
 }

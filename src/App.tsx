@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 
 import { BootMenu, type BootTarget } from './components/BootMenu'
@@ -16,22 +17,23 @@ function App() {
 
   if (screen === 'terminal') {
     return (
-      <main className="portfolio-page">
-        <button type="button" onClick={() => setScreen('boot')}>
-          Reboot
-        </button>
-
-        <TerminalWindow />
-      </main>
+      <TerminalWindow
+        onReboot={() => setScreen('boot')}
+        onGui={() => setScreen('gui')}
+      />
     )
   }
 
   return (
     <main className="gui-placeholder">
       <h1>Apathbyte Desktop</h1>
+
       <p>Graphical environment — under construction.</p>
 
-      <button type="button" onClick={() => setScreen('boot')}>
+      <button
+        type="button"
+        onClick={() => setScreen('boot')}
+      >
         Reboot
       </button>
     </main>
