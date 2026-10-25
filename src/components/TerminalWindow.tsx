@@ -1,6 +1,15 @@
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent,} from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+} from 'react'
+
+import { type LogoName } from '../data/logos'
 import { completeInput } from '../terminal/completion'
-import { LOGOS, isLogoName, type LogoName } from '../data/logos'
+import { executeCommand } from '../terminal/executor'
+import { parseCommand } from '../terminal/parser'
 import { Neofetch } from './Neofetch'
 import './TerminalWindow.css'
 
@@ -13,29 +22,15 @@ type OutputEntry =
   | { kind: 'command'; text: string }
   | { kind: 'message'; text: string }
 
-const helpText = [
-  'Available commands:',
-  '',
-  '  help                    Show available commands',
-  '  fastfetch               Show current logo information',
-  '  fastfetch -l NAME       Change the system logo',
-  '  fastfetch --list-logos  List available logos',
-  '  neofetch                Show current logo information',
-  '  whoami                  Display user information',
-  '  clear                   Clear terminal output',
-  '  gui                     Switch to graphical interface',
-  '  reboot                  Return to the boot manager',
-  '  history                 Show previously executed commands',
-].join('\n')
-
 export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
   const [input, setInput] = useState('')
   const [entries, setEntries] = useState<OutputEntry[]>([])
   const [logo, setLogo] = useState<LogoName>('apathbyte')
+
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState<number | null>(null)
-  const savedDraft = useRef('')
 
+  const savedDraft = useRef('')
   const sessionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -46,7 +41,9 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
     }
   }, [entries])
 
-  function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+  function handleInputKeyDown(
+    event: KeyboardEvent<HTMLInputElement>
+  ) {
     if (event.key === 'Tab') {
       event.preventDefault()
       setInput(current => completeInput(current))
@@ -89,104 +86,47 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const command = input.trim()
-    if (!command) return
 
-    setCommandHistory(previous => [...previous, command])
+    const parsed = parseCommand(input)
+
+    if (!parsed) return
+
+    const updatedHistory = [...commandHistory, parsed.raw]
+
+    setCommandHistory(updatedHistory)
     setHistoryIndex(null)
     savedDraft.current = ''
     setInput('')
-    const args = command.toLowerCase().split(/\s+/)
-    const name = args[0]
 
-    if (name === 'reboot') {
-      onReboot()
+    const result = executeCommand(parsed, {
+      logo,
+      history: updatedHistory,
+    })
+
+    if (result.type === 'navigate') {
+      if (result.destination === 'gui') {
+        onGui()
+      } else {
+        onReboot()
+      }
+
       return
     }
 
-    if (name === 'gui') {
-      onGui()
-      return
-    }
-
-    if (name === 'clear') {
+    if (result.type === 'clear') {
       setEntries([])
       return
     }
 
-    if (name === 'fastfetch' || name === 'neofetch') {
-      let response = ''
-
-      if (args.length === 1) {
-        response = `Active system logo: ${logo}`
-      } else if (
-        args.length === 2 &&
-        args[1] === '--list-logos'
-      ) {
-        response = `Available logos:\n\n${Object.keys(LOGOS)
-          .map(name => `  ${name}`)
-          .join('\n')}`
-      } else if (
-        args.length === 3 &&
-        (args[1] === '-l' || args[1] === '--logo') &&
-        isLogoName(args[2])
-      ) {
-        setLogo(args[2])
-        response = `System logo changed to: ${args[2]}`
-      } else {
-        response = [
-          'Usage: fastfetch -l <logo>',
-          '',
-          'Run fastfetch --list-logos to see available logos.',
-        ].join('\n')
-      }
-
-      setEntries(previous => [
-        ...previous,
-        { kind: 'command', text: command },
-        { kind: 'message', text: response },
-      ])
-
-      return
+    if (result.type === 'set-logo') {
+      setLogo(result.logo)
     }
 
-    const nextEntries: OutputEntry[] = [
-      { kind: 'command', text: command },
-    ]
-
-    switch (name) {
-      case 'help':
-        nextEntries.push({
-          kind: 'message',
-          text: helpText,
-        })
-        break
-
-      case 'whoami':
-        nextEntries.push({
-          kind: 'message',
-          text: 'visitor — exploring the Apathbyte portfolio',
-        })
-        break
-
-      case 'history':
-        nextEntries.push({
-          kind: 'message',
-          text: [...commandHistory, command]
-            .map((item, index) => `${index + 1}  ${item}`)
-            .join('\n'),
-        })
-        break
-
-      default:
-        nextEntries.push({
-          kind: 'message',
-          text: `fish: Unknown command: ${name}\nType 'help' for available commands.`,
-        })
-        break
-    }
-
-    setEntries(previous => [...previous, ...nextEntries])
+    setEntries(previous => [
+      ...previous,
+      { kind: 'command', text: parsed.raw },
+      { kind: 'message', text: result.text },
+    ])
   }
 
   return (
@@ -262,12 +202,12 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
               type="text"
               value={input}
               onChange={event => setInput(event.target.value)}
+              onKeyDown={handleInputKeyDown}
               autoComplete="off"
               autoCapitalize="off"
               spellCheck={false}
               autoFocus
               aria-label="Terminal command"
-              onKeyDown={handleInputKeyDown}
             />
           </div>
         </form>

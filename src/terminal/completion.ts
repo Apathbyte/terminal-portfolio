@@ -1,16 +1,5 @@
-
 import { LOGOS } from '../data/logos'
-
-export const COMMANDS = [
-  'help',
-  'history',
-  'whoami',
-  'clear',
-  'fastfetch',
-  'neofetch',
-  'gui',
-  'reboot',
-] as const
+import { COMMANDS } from './commands'
 
 export function completeInput(input: string): string {
   const logoMatch = input.match(
@@ -25,7 +14,10 @@ export function completeInput(input: string): string {
     )
 
     if (matches.length === 1) {
-      return `${logoMatch[1]}${logoMatch[2]}${logoMatch[3]}${logoMatch[4]}${matches[0]}`
+      return (
+        `${logoMatch[1]}${logoMatch[2]}` +
+        `${logoMatch[3]}${logoMatch[4]}${matches[0]}`
+      )
     }
 
     return input
@@ -33,7 +25,12 @@ export function completeInput(input: string): string {
 
   if (/\s/.test(input)) return input
 
-  const matches = COMMANDS.filter(command =>
+  const candidates = COMMANDS.flatMap(command => [
+    command.name,
+    ...command.aliases,
+  ])
+
+  const matches = candidates.filter(command =>
     command.startsWith(input.toLowerCase())
   )
 
