@@ -25,6 +25,7 @@ const helpText = [
   '  clear                   Clear terminal output',
   '  gui                     Switch to graphical interface',
   '  reboot                  Return to the boot manager',
+  '  history                 Show previously executed commands',
 ].join('\n')
 
 export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
@@ -165,6 +166,15 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
         nextEntries.push({
           kind: 'message',
           text: 'visitor — exploring the Apathbyte portfolio',
+        })
+        break
+
+      case 'history':
+        nextEntries.push({
+          kind: 'message',
+          text: [...commandHistory, command]
+            .map((item, index) => `${index + 1}  ${item}`)
+            .join('\n'),
         })
         break
 
