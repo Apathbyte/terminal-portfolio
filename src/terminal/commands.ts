@@ -49,6 +49,56 @@ export const COMMANDS: readonly CommandDefinition[] = [
     usage: 'reboot',
     aliases: [],
   },
+
+  {
+    name: 'about',
+    description: 'Display professional introduction',
+    usage: 'about',
+    aliases: ['bio', 'descript'],
+  },
+  {
+    name: 'projects',
+    description: 'Display software projects',
+    usage: 'projects',
+    aliases: ['proj'],
+  },
+  {
+    name: 'research',
+    description: 'Display research interests and publications',
+    usage: 'research',
+    aliases: ['papers'],
+  },
+  {
+    name: 'education',
+    description: 'Display academic qualifications',
+    usage: 'education',
+    aliases: ['edu'],
+  },
+  {
+    name: 'skills',
+    description: 'Display technical skills',
+    usage: 'skills',
+    aliases: ['skill'],
+  },
+  {
+    name: 'experience',
+    description: 'Display professional experience',
+    usage: 'experience',
+    aliases: ['exp'],
+  },
+  {
+    name: 'contact',
+    description: 'Display professional contact links',
+    usage: 'contact',
+    aliases: ['links'],
+  },
+  {
+    name: 'resume',
+    description: 'Access downloadable résumé',
+    usage: 'resume',
+    aliases: ['cv'],
+  },
+
 ]
 
 export function findCommand(name: string) {
