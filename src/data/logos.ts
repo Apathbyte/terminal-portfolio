@@ -11,7 +11,7 @@ export const LOGOS = {
       '',
       '       APATHBYTE',
     ],
-    colors: ['#40c9f0', '#68d4f5', '#9d88ff'],
+    colors: [45, 51, 141],
   },
 
   fedora: {
@@ -26,7 +26,7 @@ export const LOGOS = {
       '     ███████',
       '       FEDORA',
     ],
-    colors: ['#51b9f4', '#348ed8', '#77d1ff'],
+    colors: [39, 33, 75],
   },
 
   windows: {
@@ -41,7 +41,7 @@ export const LOGOS = {
       '',
       '      WINDOWS',
     ],
-    colors: ['#00a4ef', '#34c4ff', '#008bd2'],
+    colors: [39, 45, 32],
   },
 
   arch: {
@@ -55,7 +55,7 @@ export const LOGOS = {
       '',
       '          ARCH',
     ],
-    colors: ['#1793d1', '#46c3ff', '#8bddff'],
+    colors: [32, 39, 117],
   },
 } as const
 

@@ -267,3 +267,113 @@
   outline: 1px solid #39baf0;
   outline-offset: 3px;
 }
+
+
+.terminal-screen {
+  background: var(--term-bg);
+  color: var(--term-fg);
+  font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+  font-size: 12px;
+  line-height: 1.2;
+  font-variant-ligatures: none;
+}
+
+.terminal-screen .terminal-system-header,
+.terminal-screen .terminal-session {
+  background: var(--term-bg);
+}
+
+.terminal-screen .neofetch__identity {
+  color: var(--term-magenta);
+}
+
+.terminal-screen .neofetch__fact dt {
+  color: var(--term-blue);
+}
+
+.terminal-screen .neofetch__fact dd,
+.terminal-screen .terminal-output,
+.terminal-screen .terminal-prompt input {
+  color: var(--term-fg);
+}
+
+.terminal-screen .shell-green {
+  color: var(--term-green);
+}
+
+.terminal-screen .shell-user {
+  color: var(--term-gold);
+}
+
+.shell-prompt--bash {
+  display: flex;
+  align-items: baseline;
+  min-height: 20px;
+  white-space: nowrap;
+}
+
+.shell-prompt__bash-prefix {
+  flex: 0 0 auto;
+  color: var(--term-bash);
+  font-weight: 500;
+}
+
+.shell-prompt--bash > :last-child {
+  margin-left: 8px;
+}
+
+.shell-prompt--bash input {
+  min-width: 0;
+  flex: 1;
+}
+
+.shell-prompt--fish {
+  display: block;
+}
+
+.xterm-chart {
+  max-width: 100%;
+  color: var(--term-fg);
+  font-family: inherit;
+}
+
+.xterm-chart h2 {
+  margin: 12px 0;
+  color: var(--term-blue);
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.xterm-chart__group {
+  margin-bottom: 15px;
+}
+
+.xterm-chart__group h3 {
+  margin: 5px 0;
+  color: var(--term-muted);
+  font-size: 11px;
+  font-weight: normal;
+}
+
+.xterm-chart__scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.xterm-chart__grid {
+  display: grid;
+  grid-template-columns: repeat(16, 32px);
+  gap: 2px;
+  width: max-content;
+}
+
+.xterm-chart__swatch {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 24px;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: bold;
+}
+

@@ -134,6 +134,31 @@ export const COMMANDS: readonly CommandDefinition[] = [
     usage: 'echo [text]',
     aliases: [],
   },
+
+  {
+    name: 'fish',
+    description: 'Switch to the Fish-style shell',
+    usage: 'fish',
+    aliases: [],
+  },
+  {
+    name: 'bash',
+    description: 'Switch to the Bash-style shell',
+    usage: 'bash',
+    aliases: [],
+  },
+  {
+    name: 'shell',
+    description: 'Display the active shell',
+    usage: 'shell',
+    aliases: [],
+  },
+  {
+    name: 'colors',
+    description: 'Display the Xterm-256 color palette',
+    usage: 'colors',
+    aliases: ['palette'],
+  },
 ]
 
 export function findCommand(name: string) {

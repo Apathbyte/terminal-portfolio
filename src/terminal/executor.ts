@@ -9,11 +9,13 @@ import {
   renderVirtualTree,
   resolveVirtualPath,
 } from './filesystem'
+import type { ShellMode } from './shell'
 
 export type CommandContext = {
   logo: LogoName
   history: readonly string[]
   cwd: string
+  shell: ShellMode
 }
 
 export type CommandResult =
@@ -22,6 +24,8 @@ export type CommandResult =
   | { type: 'set-logo'; logo: LogoName; text: string }
   | { type: 'navigate'; destination: 'gui' | 'boot' }
   | { type: 'change-directory'; path: string }
+  | { type: 'set-shell'; shell: ShellMode; text: string }
+| { type: 'show-palette' }
 
 export function executeCommand(
   parsed: ParsedCommand,
@@ -39,7 +43,7 @@ export function executeCommand(
     return {
       type: 'message',
       text:
-        `fish: Unknown command: ${parsed.name}\n` +
+        `${context.shell}: Unknown command: ${parsed.name}\n` +
         "Type 'help' for available commands.",
     }
   }
@@ -137,21 +141,31 @@ export function executeCommand(
       }
     }
 
-    // default: {
-    //     const result = executePortfolioCommand(command.name)
 
-    //     if (result){
-    //         return {
-    //             type: 'message',
-    //             text: result.text,
-    //             links: result.links,
-    //         }
-    //     }
-    // }
-    //   return {
-    //     type: 'message',
-    //     text: `Command not implemented: ${command.name}`,
-    //     }
+    case 'fish':
+      return {
+        type: 'set-shell',
+        shell: 'fish',
+        text: 'Switched to fish shell.',
+      }
+
+    case 'bash':
+      return {
+        type: 'set-shell',
+        shell: 'bash',
+        text: 'Switched to bash shell.',
+      }
+
+    case 'shell':
+      return {
+        type: 'message',
+        text: `Active shell: ${context.shell}`,
+      }
+
+    case 'colors':
+      return {
+        type: 'show-palette',
+      }
 
     case 'pwd':
       return {
