@@ -1,4 +1,3 @@
-
 const ansi16 = [
   '#000000', '#800000', '#008000', '#808000',
   '#000080', '#800080', '#008080', '#c0c0c0',
@@ -37,7 +36,7 @@ export function xtermColor(index: number): string {
 }
 
 export const terminalColorIds = {
-  background: 235,
+  background: 0,
   foreground: 255,
   bashPrompt: 141,
   fishPrompt: 83,

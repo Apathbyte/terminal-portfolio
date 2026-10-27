@@ -1,4 +1,7 @@
 import { LOGOS, type LogoName } from '../data/logos'
+import type { ShellMode } from '../terminal/shell'
+import { xtermColor } from '../terminal/xterm256'
+
 const systemInfo = [
   { label: 'OS', value: 'Apathbyte Linux (Web Edition)' },
   { label: 'Host', value: 'GitHub Pages' },
@@ -11,16 +14,14 @@ const systemInfo = [
   { label: 'Status', value: 'Online' },
 ]
 
-const palette = [
-  '#242424', '#e64c4c', '#4bc96a', '#e2bd41',
-  '#3ab7ec', '#a06ad8', '#36c8ba', '#eeeeee',
-]
+const palette = [196, 46, 226, 39, 201, 51, 255, 244]
 
 type NeofetchProps = {
   logo: LogoName
+  shell: ShellMode
 }
 
-export function Neofetch({ logo }: NeofetchProps) {
+export function Neofetch({ logo, shell}: NeofetchProps) {
   return (
     <section className="neofetch" aria-label="Portfolio system info">
         <pre className="neofetch__logo" aria-hidden="true">
@@ -30,7 +31,7 @@ export function Neofetch({ logo }: NeofetchProps) {
             return (
             <span
                 key={index}
-                style={{ color: colors[index % colors.length] }}
+                style={{ color: xtermColor(colors[index % colors.length]) }}
             >
                 {line}{'\n'}
             </span>
@@ -51,7 +52,11 @@ export function Neofetch({ logo }: NeofetchProps) {
           {systemInfo.map(item => (
             <div className="neofetch__fact" key={item.label}>
               <dt>{item.label}:</dt>
-              <dd>{item.value}</dd>
+              <dd>
+                {item.label === 'Shell'
+                  ? `${shell} (portfolio simulator)`
+                  : item.value}
+              </dd>
             </div>
           ))}
         </dl>
@@ -61,7 +66,7 @@ export function Neofetch({ logo }: NeofetchProps) {
             <span
               key={color}
               className="neofetch__color"
-              style={{ backgroundColor: color }}
+              style={{ backgroundColor: xtermColor(color) }}
             />
           ))}
         </div>
