@@ -212,8 +212,14 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
     }
   }
 
+  // return (
+  //   <main className="terminal-screen" style = {terminalStyle}>
   return (
-    <main className="terminal-screen" style = {terminalStyle}>
+  <div className="crt-room">
+    <div className="crt-monitor">
+      <div className="crt-bezel">
+        <div className="crt-screen">
+        <main className="terminal-screen" style={terminalStyle}>
       <header className="terminal-system-header">
         <Neofetch logo={logo} shell ={shell}/>
       </header>
@@ -285,6 +291,10 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
           </ShellPrompt>
         </form>
       </section>
-    </main>
-  )
+          </main>
+        </div>
+      </div>
+    </div>
+  </div>
+)
 }

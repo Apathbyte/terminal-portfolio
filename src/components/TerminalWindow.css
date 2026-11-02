@@ -8,7 +8,7 @@
 
 .terminal-screen {
   width: 100%;
-  height: 100dvh;
+  height: 100%;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -380,4 +380,156 @@
   font-family: inherit;
   font-size: 10px;
   font-weight: bold;
+}
+.crt-room {
+  width: 100%;
+  height: 100dvh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, rgba(30, 30, 30, 0.18) 0%, rgba(10, 10, 10, 0.55) 35%, rgba(0, 0, 0, 0.96) 75%, #000 100%);
+}
+
+.crt-monitor {
+  position: relative;
+  width: min(1100px, 92vw);
+  height: min(760px, 88dvh);
+  padding: 22px;
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, #2b2b2b 0%, #171717 55%, #101010 100%);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.75),
+    0 0 120px rgba(0, 255, 180, 0.05);
+}
+
+.crt-bezel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, #1f1f1f 0%, #111 100%);
+  box-shadow:
+    inset 0 2px 10px rgba(255, 255, 255, 0.05),
+    inset 0 -8px 18px rgba(0, 0, 0, 0.6);
+}
+
+.crt-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 28px / 22px;
+  background: #000;
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.8),
+    inset 0 0 90px rgba(0, 255, 200, 0.06),
+    0 0 60px rgba(0, 255, 180, 0.10),
+    0 0 140px rgba(0, 180, 255, 0.04);
+  transform: perspective(1200px) scale(1);
+}
+
+.crt-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01) 12%, rgba(0, 0, 0, 0.06) 55%, rgba(255, 255, 255, 0.015) 100%);
+  z-index: 3;
+}
+
+.crt-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.028) 0px,
+      rgba(255, 255, 255, 0.028) 1px,
+      rgba(0, 0, 0, 0.02) 2px,
+      rgba(0, 0, 0, 0.02) 4px
+    );
+  mix-blend-mode: soft-light;
+  opacity: 0.55;
+  z-index: 4;
+}
+
+.crt-screen .terminal-screen {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 18px 22px;
+  overflow: hidden;
+  background: transparent;
+  position: relative;
+  z-index: 2;
+}
+
+.crt-screen .terminal-system-header,
+.crt-screen .terminal-session {
+  background: transparent;
+}
+
+.crt-screen .terminal-system-header {
+  padding-bottom: 10px;
+}
+
+.crt-screen .terminal-session {
+  padding-bottom: 8px;
+}
+
+.crt-screen .terminal-output,
+.crt-screen .neofetch__fact dd,
+.crt-screen .terminal-prompt input {
+  text-shadow:
+    0 0 3px rgba(255, 255, 255, 0.10),
+    0 0 8px rgba(0, 255, 200, 0.05);
+}
+
+.crt-screen .shell-green,
+.crt-screen .shell-user,
+.crt-screen .neofetch__identity,
+.crt-screen .neofetch__fact dt {
+  text-shadow:
+    0 0 4px rgba(255, 255, 255, 0.08),
+    0 0 10px currentColor;
+}
+
+.crt-screen .neofetch__palette {
+  filter: saturate(1.1) brightness(1.04);
+}
+
+.crt-screen .terminal-session::-webkit-scrollbar {
+  width: 8px;
+}
+
+.crt-screen .terminal-session::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.crt-screen .terminal-session::-webkit-scrollbar-thumb {
+  background: rgba(180, 180, 180, 0.22);
+  border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+  .crt-monitor {
+    width: 96vw;
+    height: 94dvh;
+    padding: 14px;
+  }
+
+  .crt-bezel {
+    padding: 12px;
+  }
+
+  .crt-screen .terminal-screen {
+    padding: 14px 16px;
+  }
 }
