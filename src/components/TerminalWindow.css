@@ -17,8 +17,8 @@
   background: var(--term-bg, #000000);
   color: var(--term-fg, #eeeeee);
   font-family: "ApathbytePixel", monospace;
-  font-size: 16px;
-  line-height: 1;
+  font-size: 20px;
+  line-height: 1.15;
   font-weight: 400;
   font-synthesis: none;
   font-variant-ligatures: none;
@@ -46,12 +46,9 @@
   margin: 0;
   padding: 0;
   background: none;
-  /* background-image: none;
-  background-clip: border-box;
-  -webkit-background-clip: initial; */
   color: #39baf0;
   font-family: inherit;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: normal;
   line-height: 1.12;
   letter-spacing: 0;
@@ -124,6 +121,11 @@
   width: 24px;
   height: 17px;
   flex: 0 0 24px;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  cursor: pointer;
+  appearance: none;
 }
 
 .terminal-session {
@@ -282,11 +284,11 @@
 }
 
 .terminal-screen .neofetch__identity {
-  color: var(--term-magenta);
+  color: var(--term-accent);
 }
 
 .terminal-screen .neofetch__fact dt {
-  color: var(--term-blue);
+  color: var(--term-accent);
 }
 
 .terminal-screen .neofetch__fact dd,
@@ -296,11 +298,11 @@
 }
 
 .terminal-screen .shell-green {
-  color: var(--term-green);
+  color: var(--term-accent);
 }
 
 .terminal-screen .shell-user {
-  color: var(--term-gold);
+  color: var(--term-accent);
 }
 
 .shell-prompt--bash {
@@ -312,7 +314,7 @@
 
 .shell-prompt__bash-prefix {
   flex: 0 0 auto;
-  color: var(--term-bash);
+  color: var(--term-accent);
   font-weight: 500;
 }
 
@@ -524,10 +526,10 @@
 .crt-screen .shell-green,
 .crt-screen .shell-user {
   text-shadow:
-    0 0 2px rgba(245, 255, 245, 0.15),
-    0 0 6px rgba(75, 255, 135, 0.07);
+    /* 0 0 2px rgba(245, 255, 245, 0.15),
+    0 0 6px rgba(75, 255, 135, 0.07); */
+   0 0 1px rgba(245, 255, 245, 0.08);
 }
-
 
 .crt-screen .neofetch__palette {
   filter: saturate(1.1) brightness(1.04);
@@ -640,10 +642,10 @@
   display: block;
   width: 1ch;
   height: 1em;
-  background: var(--term-gold, #ffd700);
+  background: var(--term-accent);
   box-shadow:
-    0 0 5px color-mix(in srgb, var(--term-gold, #ffd700) 50%, transparent),
-    0 0 10px color-mix(in srgb, var(--term-gold, #ffd700) 15%, transparent);
+    0 0 5px color-mix(in srgb, var(--term-accent) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--term-accent) 15%, transparent);
   z-index: 2;
   animation: terminal-cursor-blink 1s steps(1, end) infinite;
 }
@@ -664,3 +666,14 @@
     opacity: 1;
   }
 }
+
+.neofetch__color[aria-pressed="true"] {
+  outline: 1px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.neofetch__color:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+

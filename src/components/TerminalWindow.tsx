@@ -65,7 +65,7 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
   const [logo, setLogo] = useState<LogoName>('apathbyte')
   const [cwd, setCwd] = useState(HOME)
   const [shell, setShell] = useState<ShellMode>(DEFAULT_SHELL)
-
+  const [accentIndex, setAccentIndex] = useState<number>(terminalColorIds.bashPrompt)
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState<number | null>(null)
 
@@ -230,7 +230,7 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
         <div className="crt-screen">
           <main
             className="terminal-screen"
-            style={terminalStyle}
+            style={{...terminalStyle,'--term-accent': xtermColor(accentIndex),} as CSSProperties}
             onClick={event => {
               const target = event.target as HTMLElement
               if (target.closest('a, button, input, textarea, select')) {
@@ -243,9 +243,14 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
             }}
           >
       <header className="terminal-system-header">
-        <Neofetch logo={logo} shell ={shell}/>
+          <Neofetch
+            logo={logo}
+            shell={shell}
+            accentIndex={accentIndex}
+            onAccentChange={index => {setAccentIndex(index)
+            inputRef.current?.focus({ preventScroll: true })}}
+          />
       </header>
-
       <section
         className="terminal-session"
         ref={sessionRef}

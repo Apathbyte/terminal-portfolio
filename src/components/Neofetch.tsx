@@ -14,14 +14,16 @@ const systemInfo = [
   { label: 'Status', value: 'Online' },
 ]
 
-const palette = [196, 46, 226, 39, 201, 51, 255, 244]
+const palette = [196, 46, 226, 39, 141, 201, 51, 255, 244]
 
 type NeofetchProps = {
   logo: LogoName
   shell: ShellMode
+  accentIndex: number
+  onAccentChange: (index: number) => void
 }
 
-export function Neofetch({ logo, shell}: NeofetchProps) {
+export function Neofetch({logo, shell, accentIndex, onAccentChange,}: NeofetchProps) {
   return (
     <section className="neofetch" aria-label="Portfolio system info">
         <pre className="neofetch__logo" aria-hidden="true">
@@ -61,12 +63,18 @@ export function Neofetch({ logo, shell}: NeofetchProps) {
           ))}
         </dl>
 
-        <div className="neofetch__palette" aria-label="ANSI color palette">
+        
+        <div className="neofetch__palette" aria-label="Terminal accent colors">
           {palette.map(color => (
-            <span
+            <button
               key={color}
+              type="button"
               className="neofetch__color"
               style={{ backgroundColor: xtermColor(color) }}
+              onClick={() => onAccentChange(color)}
+              aria-label={`Set terminal accent to color ${color}`}
+              aria-pressed={accentIndex === color}
+              title={`Xterm ${color}: ${xtermColor(color)}`}
             />
           ))}
         </div>
