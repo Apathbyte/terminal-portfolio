@@ -58,6 +58,9 @@ const terminalStyle = {
 
 export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
   const [input, setInput] = useState('')
+  const [cursorPosition, setCursorPosition] = useState(0)
+  const [inputScrollLeft, setInputScrollLeft] = useState(0)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [entries, setEntries] = useState<OutputEntry[]>([])
   const [logo, setLogo] = useState<LogoName>('apathbyte')
   const [cwd, setCwd] = useState(HOME)
@@ -82,7 +85,9 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
   ) {
     if (event.key === 'Tab') {
       event.preventDefault()
-      setInput(current => completeInput(current))
+      const completed = completeInput(input)
+      setInput(completed)
+      setCursorPosition(completed.length)
       return
     }
 
@@ -102,6 +107,7 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
 
       setHistoryIndex(nextIndex)
       setInput(commandHistory[nextIndex])
+      setCursorPosition(commandHistory[nextIndex].length)
       return
     }
 
@@ -113,6 +119,7 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
       if (nextIndex >= commandHistory.length) {
         setHistoryIndex(null)
         setInput(savedDraft.current)
+        setCursorPosition(savedDraft.current.length)
       } else {
         setHistoryIndex(nextIndex)
         setInput(commandHistory[nextIndex])
@@ -133,6 +140,8 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
     setHistoryIndex(null)
     savedDraft.current = ''
     setInput('')
+    setCursorPosition(0)
+    setInputScrollLeft(0)
 
     const result = executeCommand(parsed, {
       logo,
@@ -219,7 +228,20 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
     <div className="crt-monitor">
       <div className="crt-bezel">
         <div className="crt-screen">
-        <main className="terminal-screen" style={terminalStyle}>
+          <main
+            className="terminal-screen"
+            style={terminalStyle}
+            onClick={event => {
+              const target = event.target as HTMLElement
+              if (target.closest('a, button, input, textarea, select')) {
+                return
+              }
+              if (window.getSelection()?.toString()) {
+                return
+              }
+              inputRef.current?.focus({ preventScroll: true })
+            }}
+          >
       <header className="terminal-system-header">
         <Neofetch logo={logo} shell ={shell}/>
       </header>
@@ -275,20 +297,43 @@ export function TerminalWindow({ onReboot, onGui }: TerminalProps) {
         </div>
 
         <form className="terminal-prompt" onSubmit={handleSubmit}>
-          <ShellPrompt shell={shell} cwd={cwd}>
-            <input
-              id="shell-input"
-              type="text"
-              value={input}
-              onChange={event => setInput(event.target.value)}
-              onKeyDown={handleInputKeyDown}
-              autoComplete="off"
-              autoCapitalize="off"
-              spellCheck={false}
-              autoFocus
-              aria-label="Terminal command"
-            />
-          </ShellPrompt>
+            <ShellPrompt shell={shell} cwd={cwd}>
+              <div className="terminal-input-wrap">
+                <input
+                  ref={inputRef}
+                  id="shell-input"
+                  type="text"
+                  value={input}
+                  onChange={event => {
+                    setInput(event.target.value)
+                    setCursorPosition(
+                      event.target.selectionStart ?? event.target.value.length
+                    )
+                    setInputScrollLeft(event.target.scrollLeft)
+                  }}
+                  onSelect={event => {
+                    setCursorPosition(event.currentTarget.selectionStart ?? 0)
+                    setInputScrollLeft(event.currentTarget.scrollLeft)
+                  }}
+                  onScroll={event => {
+                    setInputScrollLeft(event.currentTarget.scrollLeft)
+                  }}
+                  onKeyDown={handleInputKeyDown}
+                  autoComplete="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                  autoFocus
+                  aria-label="Terminal command"
+                />
+                <span
+                  className="terminal-block-cursor"
+                  style={{
+                    left: `calc(${cursorPosition}ch - ${inputScrollLeft}px)`,
+                  }}
+                  aria-hidden="true"
+                />
+              </div>
+            </ShellPrompt>
         </form>
       </section>
           </main>

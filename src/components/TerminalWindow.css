@@ -14,8 +14,8 @@
   flex-direction: column;
   overflow: hidden;
   padding: 8px 12px;
-  background: #222527;
-  color: #eeeeee;
+  background: var(--term-bg, #000000);
+  color: var(--term-fg, #eeeeee);
   font-family: "ApathbytePixel", monospace;
   font-size: 16px;
   line-height: 1;
@@ -31,7 +31,6 @@
   overflow-y: auto;
   padding: 0 0 8px;
   border: none;
-  background: #222527;
 }
 
 .terminal-screen .neofetch {
@@ -47,9 +46,9 @@
   margin: 0;
   padding: 0;
   background: none;
-  background-image: none;
+  /* background-image: none;
   background-clip: border-box;
-  -webkit-background-clip: initial;
+  -webkit-background-clip: initial; */
   color: #39baf0;
   font-family: inherit;
   font-size: 16px;
@@ -136,9 +135,8 @@
   overflow-x: hidden;
   overscroll-behavior: contain;
   padding: 6px 0 16px;
-  background: #222527;
   scrollbar-width: thin;
-  scrollbar-color: #555b60 #222527;
+  scrollbar-color: #555b60 var(--term-bg, #000000);
 }
 
 .terminal-history {
@@ -229,7 +227,7 @@
 @media (max-width: 700px) {
   .terminal-screen {
     padding: 8px;
-    font-size: 16px;
+    /* font-size: 16px; */
   }
 
   .terminal-screen .neofetch {
@@ -276,11 +274,6 @@
 .terminal-output-link:focus-visible {
   outline: 1px solid #39baf0;
   outline-offset: 3px;
-}
-
-.terminal-screen {
-  background: var(--term-bg);
-  color: var(--term-fg);
 }
 
 .terminal-screen .terminal-system-header,
@@ -429,35 +422,71 @@
     inset 0 0 90px rgba(0, 255, 200, 0.06),
     0 0 60px rgba(0, 255, 180, 0.10),
     0 0 140px rgba(0, 180, 255, 0.04);
-  transform: perspective(1200px) scale(1);
+  animation: crt-power-on 900ms ease-out both;
 }
 
 .crt-screen::before {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 5;
   pointer-events: none;
+  border-radius: inherit;
   background:
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01) 12%, rgba(0, 0, 0, 0.06) 55%, rgba(255, 255, 255, 0.015) 100%);
-  z-index: 3;
+    radial-gradient(
+      ellipse at center,
+      rgba(210, 255, 220, 0.48) 0%,
+      rgba(90, 255, 140, 0.12) 30%,
+      transparent 65%
+    );
+  opacity: 0;
+  animation: crt-startup-flash 1100ms ease-out both;
 }
 
 .crt-screen::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 4;
   pointer-events: none;
+  border-radius: inherit;
   background:
+    radial-gradient(
+      ellipse at center,
+      transparent 53%,
+      rgba(0, 0, 0, 0.16) 78%,
+      rgba(0, 0, 0, 0.52) 100%
+    ),
+    linear-gradient(
+      115deg,
+      transparent 15%,
+      rgba(255, 255, 255, 0.025) 27%,
+      transparent 40%,
+      rgba(255, 255, 255, 0.012) 62%,
+      transparent 76%
+    ),
     repeating-linear-gradient(
       to bottom,
-      rgba(255, 255, 255, 0.028) 0px,
-      rgba(255, 255, 255, 0.028) 1px,
-      rgba(0, 0, 0, 0.02) 2px,
-      rgba(0, 0, 0, 0.02) 4px
+      transparent 0px,
+      transparent 2px,
+      rgba(0, 0, 0, 0.10) 3px,
+      transparent 4px
     );
-  mix-blend-mode: soft-light;
-  opacity: 0.55;
-  z-index: 4;
+}
+
+@keyframes crt-startup-flash {
+  0%, 12% {
+    opacity: 0;
+  }
+  24% {
+    opacity: 0.75;
+  }
+  45% {
+    opacity: 0.18;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .crt-screen .terminal-screen {
@@ -469,6 +498,7 @@
   background: transparent;
   position: relative;
   z-index: 2;
+  animation: crt-text-flicker 8s linear infinite;
 }
 
 .crt-screen .terminal-system-header,
@@ -484,22 +514,20 @@
   padding-bottom: 8px;
 }
 
-.crt-screen .terminal-output,
+.crt-screen .neofetch__logo,
+.crt-screen .neofetch__identity,
+.crt-screen .neofetch__fact dt,
 .crt-screen .neofetch__fact dd,
-.crt-screen .terminal-prompt input {
+.crt-screen .terminal-output,
+.crt-screen .terminal-prompt input,
+.crt-screen .shell-prompt__bash-prefix,
+.crt-screen .shell-green,
+.crt-screen .shell-user {
   text-shadow:
-    0 0 3px rgba(255, 255, 255, 0.10),
-    0 0 8px rgba(0, 255, 200, 0.05);
+    0 0 2px rgba(245, 255, 245, 0.15),
+    0 0 6px rgba(75, 255, 135, 0.07);
 }
 
-.crt-screen .shell-green,
-.crt-screen .shell-user,
-.crt-screen .neofetch__identity,
-.crt-screen .neofetch__fact dt {
-  text-shadow:
-    0 0 4px rgba(255, 255, 255, 0.08),
-    0 0 10px currentColor;
-}
 
 .crt-screen .neofetch__palette {
   filter: saturate(1.1) brightness(1.04);
@@ -531,5 +559,108 @@
 
   .crt-screen .terminal-screen {
     padding: 14px 16px;
+  }
+}
+
+@keyframes crt-power-on {
+  0% {
+    clip-path: inset(49.5% 0 49.5% 0);
+    opacity: 0;
+  }
+
+  20% {
+    clip-path: inset(49.5% 0 49.5% 0);
+    opacity: 1;
+  }
+
+  45% {
+    clip-path: inset(38% 0 38% 0);
+    opacity: 1;
+  }
+
+  70% {
+    clip-path: inset(0 0 0 0);
+    opacity: 0.92;
+  }
+
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+@keyframes crt-text-flicker {
+  0%, 19%, 21%, 63%, 65%, 100% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0.985;
+  }
+  64% {
+    opacity: 0.97;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crt-screen,
+  .crt-screen::before,
+  .crt-screen .terminal-screen {
+    animation: none;
+  }
+
+  .crt-screen::before {
+    opacity: 0;
+  }
+}
+
+
+.terminal-input-wrap {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.terminal-input-wrap input {
+  width: 100%;
+  min-width: 0;
+}
+
+.terminal-screen .terminal-input-wrap input {
+  caret-color: transparent;
+}
+
+.terminal-block-cursor {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: block;
+  width: 1ch;
+  height: 1em;
+  background: var(--term-gold, #ffd700);
+  box-shadow:
+    0 0 5px color-mix(in srgb, var(--term-gold, #ffd700) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--term-gold, #ffd700) 15%, transparent);
+  z-index: 2;
+  animation: terminal-cursor-blink 1s steps(1, end) infinite;
+}
+
+@keyframes terminal-cursor-blink {
+  0%, 49% {
+    opacity: 1;
+  }
+
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal-block-cursor {
+    animation: none;
+    opacity: 1;
   }
 }
